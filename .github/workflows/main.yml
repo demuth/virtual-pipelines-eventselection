@@ -12,4 +12,3 @@
           run: |
             COMPILER=$(root-config --cxx)
             $COMPILER -g -o3 -Wall -Wextra -Wpendantic -o skim skim.cxx
-
