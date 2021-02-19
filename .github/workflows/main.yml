@@ -1,11 +1,17 @@
 # workflow file using YML syntax by DeMuth 20210219
+# see https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions
+# tabs are evil, standard two spaces, to verify syntax: $ act -i 
 name: example
+# Triggered when code is pushed to any branch in the repository
 on: push
+# A workflow is made up of one or more jobs
 jobs:
+# my first job greeting
   greeting:
     runs-on: ubuntu-latest
     steps:
       - run: echo hello world
+# my second job
   build_skim:
     needs: greeting
     runs-on: ubuntu-latest
@@ -30,6 +36,7 @@ jobs:
           with:
             name: skim${{ matrix.version }}
             path: skim
+# a third job
   skim:
     needs: build_skim
     runs-on: ubuntu-latest
@@ -50,7 +57,7 @@ jobs:
           path: |
             skim_ggH.root
             skim_ggH.log
-
+# a fourth job
   plot:
     needs: skim
     runs-on: ubuntu-latest
@@ -70,9 +77,10 @@ jobs:
         with:
           name: histograms
           path: hist_ggH.root
+# fifth job
   test:
     needs: plot
-    runss-on: ubuntu-latest
+    runs-on: ubuntu-latest
     container: rootproject/root-conda:6.18.04
     steps:
       - name: checkout repository
@@ -89,3 +97,5 @@ jobs:
         run: python tests/test_cutflow_ggH.py
       - name: plot_test
         run: python tests/test_plot_ggH.py
+# sixth job - challange, if action, see https://docs.gitlab.com/ee/ci/yaml/#rules
+# also https://docs.gitlab.com/ee/ci/yaml/#rulesif
