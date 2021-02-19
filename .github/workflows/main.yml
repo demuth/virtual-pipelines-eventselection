@@ -78,7 +78,7 @@ jobs:
           name: histograms
           path: hist_ggH.root
 # fifth job
-  test:
+  test_log:
     needs: plot
     runs-on: ubuntu-latest
     container: rootproject/root-conda:6.18.04
@@ -98,4 +98,17 @@ jobs:
       - name: plot_test
         run: python tests/test_plot_ggH.py
 # sixth job - challange, if action, see https://docs.gitlab.com/ee/ci/yaml/#rules
-# also https://docs.gitlab.com/ee/ci/yaml/#rulesif
+# also https://docs.gitlab.com/ee/ci/yaml/#rulesif - reference sagitta42
+  test_histo:
+    if: github.ref == 'refs/heads/bkg_dev'
+    needs: plot
+    runs-on: ubuntu-latest
+    container: rootproject/root-conda:6:18:.04
+    steps:
+      - name: checkout repository
+        uses: actions/checkout@v2
+      - uses: actions/download-artifact@v2
+        with:
+          name: histograms
+      - name: test histogram
+        run: python tests/test_plot_ggH.py
