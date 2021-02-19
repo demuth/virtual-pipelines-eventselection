@@ -1,17 +1,10 @@
-# workflow file using YML syntax by DeMuth 20210219
-# see https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions
-# tabs are evil, standard two spaces, to verify syntax: $ act -i 
 name: example
-# Triggered when code is pushed to any branch in the repository
 on: push
-# A workflow is made up of one or more jobs
 jobs:
-# my first job greeting
   greeting:
     runs-on: ubuntu-latest
     steps:
       - run: echo hello world
-# my second job
   build_skim:
     needs: greeting
     runs-on: ubuntu-latest
@@ -36,7 +29,6 @@ jobs:
           with:
             name: skim${{ matrix.version }}
             path: skim
-# a third job
   skim:
     needs: build_skim
     runs-on: ubuntu-latest
@@ -57,7 +49,7 @@ jobs:
           path: |
             skim_ggH.root
             skim_ggH.log
-# a fourth job
+
   plot:
     needs: skim
     runs-on: ubuntu-latest
@@ -77,10 +69,9 @@ jobs:
         with:
           name: histograms
           path: hist_ggH.root
-# fifth job
-  test_log:
+  test:
     needs: plot
-    runs-on: ubuntu-latest
+    runss-on: ubuntu-latest
     container: rootproject/root-conda:6.18.04
     steps:
       - name: checkout repository
@@ -90,25 +81,10 @@ jobs:
         with:
           name: skim_ggH
       - name: Download from plot
-        uses: actions/download-artifact@v2
+        uses: actions/download@v2
         with:  
           name: histograms
       - name: cutflow test
         run: python tests/test_cutflow_ggH.py
       - name: plot_test
-        run: python tests/test_plot_ggH.py
-# sixth job - challange, if action, see https://docs.gitlab.com/ee/ci/yaml/#rules
-# also https://docs.gitlab.com/ee/ci/yaml/#rulesif - reference sagitta42
-  test_histo:
-    if: github.ref == 'refs/heads/bkg_dev'
-    needs: plot
-    runs-on: ubuntu-latest
-    container: rootproject/root-conda:6:18:.04
-    steps:
-      - name: checkout repository
-        uses: actions/checkout@v2
-      - uses: actions/download-artifact@v2
-        with:
-          name: histograms
-      - name: test histogram
         run: python tests/test_plot_ggH.py
